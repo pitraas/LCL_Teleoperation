@@ -43,8 +43,8 @@ LCL.body7 = rigidBody('tool');
 LCL.jnt7 = rigidBodyJoint('jnt7','revolute');
 
 % set new homeConfiguration
-LCL.jnt3.HomePosition = pi/4;
-LCL.jnt4.HomePosition = pi/2;
+LCL.jnt3.HomePosition = pi/2;
+LCL.jnt4.HomePosition = 0;
 LCL.jnt5.HomePosition = pi/2;
 LCL.jnt6.HomePosition = pi;
 
