@@ -1,6 +1,7 @@
 clear all
 clc
 
+
 % Defining length of LCL Segments
 LCL.heightBase      = 0.15;
 LCL.heightShoulder  = 0.07;
@@ -8,20 +9,21 @@ LCL.lengthUpperarm  = 0.30;
 LCL.widthUpperarm   = 0.06;
 LCL.lengthUnderarm  = 0.20;
 LCL.widthUnderarm   = 0.05;
-LCL.lengthAxis5     = 0.03;
-LCL.widthAxis5      = 0.02;
+LCL.lengthAxis5     = 0.06;
+LCL.widthAxis5      = 0.065;
 LCL.lengthAxis6     = 0.03;
 LCL.lengthTool      = 0.1;
 
-% Defining Denavit Hartenberg Parameters for 6 Axis LCL-Robot
+% Defining Denavit Hartenberg Parameters for 5 Axis LCL_Camera_Robot
 
 LCL.dhParams = [0                   0       LCL.heightBase      0;
                 0                   pi/2    LCL.heightShoulder  0;
-                LCL.lengthUpperarm  pi      -LCL.widthUpperarm  pi/2;
+                LCL.lengthUpperarm  pi      -LCL.widthUpperarm  0;
                 LCL.lengthUnderarm  0       LCL.widthUnderarm   0;
-                LCL.lengthAxis5     pi/2    LCL.widthAxis5      pi/2;
-                0                   pi/2    LCL.lengthAxis6     pi;
+                LCL.lengthAxis5     -pi/2   -LCL.widthAxis5     0;
                 0                   0       LCL.lengthTool      0];
+                % 0                   pi/2    LCL.lengthAxis6     pi;
+                % 0                   0       LCL.lengthTool      0];
 
 % Creating rigid body tree (model of LCL Robot)
 LCL_Tree = rigidBodyTree;
@@ -35,18 +37,19 @@ LCL.body3 = rigidBody('upperarm');
 LCL.jnt3 = rigidBodyJoint('jnt3','revolute');
 LCL.body4 = rigidBody('underarm');
 LCL.jnt4 = rigidBodyJoint('jnt4','revolute');
-LCL.body5 = rigidBody('body5');
+LCL.body5 = rigidBody('Axis_5_Camera');
 LCL.jnt5 = rigidBodyJoint('jnt5','revolute');
 LCL.body6 = rigidBody('body6');
 LCL.jnt6 = rigidBodyJoint('jnt6','revolute');
-LCL.body7 = rigidBody('tool');
-LCL.jnt7 = rigidBodyJoint('jnt7','revolute');
+% LCL.body7 = rigidBody('tool');
+% LCL.jnt7 = rigidBodyJoint('jnt7','revolute');
 
 % set new homeConfiguration
+
 LCL.jnt3.HomePosition = pi/2;
 LCL.jnt4.HomePosition = 0;
-LCL.jnt5.HomePosition = pi/2;
-LCL.jnt6.HomePosition = pi;
+LCL.jnt5.HomePosition = 0;
+%LCL.jnt6.HomePosition = pi;
 
 % % Add Viuals to Bodies
 % % addVisual(body1,'box',[0.10 0.15 0.12])
@@ -67,7 +70,7 @@ LCL.body3.Joint = LCL.jnt3;
 LCL.body4.Joint = LCL.jnt4;
 LCL.body5.Joint = LCL.jnt5;
 LCL.body6.Joint = LCL.jnt6;
-LCL.body7.Joint = LCL.jnt7;
+%LCL.body7.Joint = LCL.jnt7;
 
 % attach the bodies to the rigid body tree LCL
 addBody(LCL_Tree,LCL.body1,'base')
@@ -75,8 +78,8 @@ addBody(LCL_Tree,LCL.body2,'baselcl')
 addBody(LCL_Tree,LCL.body3,'shoulder')
 addBody(LCL_Tree,LCL.body4,'upperarm')
 addBody(LCL_Tree,LCL.body5,'underarm')
-addBody(LCL_Tree,LCL.body6,'body5')
-addBody(LCL_Tree,LCL.body7,'body6')
+addBody(LCL_Tree,LCL.body6,'Axis_5_Camera')
+%addBody(LCL_Tree,LCL.body7,'body6')
 
 show(LCL_Tree);
 % interactiveLCL = interactiveRigidBodyTree(LCL,homeconfiguration);
