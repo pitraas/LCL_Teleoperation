@@ -1,6 +1,3 @@
-clear all
-clc
-
 
 % Defining length of LCL Segments
 LCL.heightBase      = 0.15;
@@ -33,14 +30,19 @@ LCL.body1 = rigidBody('baselcl');
 LCL.jnt1 = rigidBodyJoint('jnt1','fixed');
 LCL.body2 = rigidBody('shoulder');
 LCL.jnt2 = rigidBodyJoint('jnt2','revolute');
+LCL.jnt2.PositionLimits = [deg2rad(-180) deg2rad(180)];
 LCL.body3 = rigidBody('upperarm');
 LCL.jnt3 = rigidBodyJoint('jnt3','revolute');
+LCL.jnt3.PositionLimits = [deg2rad(70) deg2rad(190)];
 LCL.body4 = rigidBody('underarm');
 LCL.jnt4 = rigidBodyJoint('jnt4','revolute');
+LCL.jnt4.PositionLimits = [deg2rad(-160) deg2rad(160)];
 LCL.body5 = rigidBody('Axis_5_Camera');
 LCL.jnt5 = rigidBodyJoint('jnt5','revolute');
+LCL.jnt5.PositionLimits = [deg2rad(-90) deg2rad(90)];
 LCL.body6 = rigidBody('body6');
 LCL.jnt6 = rigidBodyJoint('jnt6','revolute');
+LCL.jnt6.PositionLimits = [deg2rad(-90) deg2rad(90)];
 % LCL.body7 = rigidBody('tool');
 % LCL.jnt7 = rigidBodyJoint('jnt7','revolute');
 
