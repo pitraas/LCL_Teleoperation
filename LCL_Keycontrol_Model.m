@@ -1,63 +1,74 @@
+clc
 
-
-
+% Define variables
 r = rateControl(10);
-%Stepsize in rad
-stepSize = (pi/180)*5;
+stepSize = 0.02
+q; %Stepsize in cm
+homePose = homeConfiguration(LCL_Tree);
+ik = inverseKinematics('RigidBodyTree', LCL_Tree); % create inverseKinematics Object
+weights = [0.25 0.25 0.25 1 1 1]; %specify weights for orientation / Position
+
+
 
 % Move to initial Position 
-% RobMaster.writeline('move 2048 2048 2048 2048 2048 T=2000 D=0');
 
-InitialPosRadian = homeConfiguration(LCL_Tree);
-for i = 1:6
-    InitialPosRadian(i).JointPosition = pi;
-end
+RobMaster.writeline('move 2048 2048 2048 2048 2048 T=1000 D=0');
 
-newPosRadian = InitialPosRadian;
+oldPose = homePose;
+
+nextPose = getTransform(LCL_Tree,homePose,'Axis_5_Camera','base');
+
+disp('Change Pose: x+: s, x-: x, y+: a, y-: y, z+: d, z-: c, quit: q');
 programmRunning = 1;
 while programmRunning 
-    
-    keyEntered  = getkey();
+    disp('Enter MoveCommand:')
+    keyEntered = getkey();
     switch(keyEntered)
-        case '1'
-            newPosRadian(1).JointPosition = newPosRadian(1).JointPosition + stepSize;
-        case 'q'
-            newPosRadian(1).JointPosition = newPosRadian(1).JointPosition - stepSize;
-        case '2'
-            newPosRadian(2).JointPosition = newPosRadian(2).JointPosition + stepSize;
-        case 'w'
-            newPosRadian(2).JointPosition = newPosRadian(2).JointPosition - stepSize;
-        case '3'
-            newPosRadian(3).JointPosition = newPosRadian(3).JointPosition + stepSize;
-        case 'e'
-            newPosRadian(3).JointPosition = newPosRadian(3).JointPosition - stepSize;
-        case '4'
-            newPosRadian(4).JointPosition = newPosRadian(4).JointPosition + stepSize;
-        case 'r'
-            newPosRadian(4).JointPosition = newPosRadian(4).JointPosition - stepSize;
-        case '5'
-            newPosRadian(5).JointPosition = newPosRadian(5).JointPosition + stepSize;
-        case 't'
-            newPosRadian(5).JointPosition = newPosRadian(5).JointPosition - stepSize;
+        case 'a'
+            nextPose(2,4) = nextPose(2,4) + stepSize;
+        case 'y'
+            nextPose(2,4) = nextPose(2,4) - stepSize;
+        case 's'
+            nextPose(1,4) = nextPose(1,4) + stepSize;
+        case 'x'
+            nextPose(1,4) = nextPose(1,4) - stepSize;
+        case 'd'
+            nextPose(3,4) = nextPose(3,4) + stepSize;
         case 'c'
+            nextPose(3,4) = nextPose(3,4) - stepSize;
+        case 'q'
             programmRunning = 0;
     end
+    
+    disp(nextPose(1:3,4));
+    % Calculate the joint positions using the inverseKinematics object.
+    initialguess = oldPose;
+    [configSolutionRadian,solnInfo] = ik("Axis_5_Camera",nextPose,weights,oldPose);
+    oldPose = configSolutionRadian;
 
     % Show new Position of Model in figure
-    show(LCL_Tree,newPosRadian)
+    show(LCL_Tree,configSolutionRadian);
 
-    newPosEncoder = LCL_convertRadian2Encoder(newPosRadian);
+    % Convert calculated Pose to Encoder values which can be sent to LCL
+    configEncodervalues = LCL_convertRadian2Encoder(configSolutionRadian);
+    
+    % Construct Command
+    SendCommand = append('move ',num2str(configEncodervalues(1)),' ',...
+        num2str(configEncodervalues(2)),' ',num2str(configEncodervalues(3)),' ',...
+        num2str(configEncodervalues(4)),' ',num2str(configEncodervalues(5)), ' T=1000 D=0');
+    
+    % Display comand
+    disp(['Command: ', SendCommand]);
 
-   
+    % check for limits
 
-
-
-    % % % Send new Position to LCL
-    % % SendCommand = append('move ',num2str(LCL(1).JointPosition),' ',...
-    % %     num2str(LCL(2).JointPosition),' ',num2str(LCL(3).JointPosition),' ',...
-    % %     num2str(LCL(4).JointPosition),' ',num2str(LCL(5).JointPosition), ' D=0');
-    % % disp(SendCommand);
-    % % RobMaster.writeline(SendCommand);
-    % % % waitfor(r);
+    
+    % Ask if movement should be executed
+    disp('Exceute Movement? Yes: enter, No: n')
+    key = getkey();
+    if key == 13
+        RobMaster.writeline(SendCommand);
+    end
+    waitfor(r);
 end
 
