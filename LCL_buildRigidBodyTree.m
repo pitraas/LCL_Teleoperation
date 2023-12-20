@@ -9,7 +9,7 @@ LCL.widthUnderarm   = 0.05;
 LCL.lengthAxis5     = 0.06;
 LCL.widthAxis5      = 0.065;
 LCL.lengthAxis6     = 0.03;
-LCL.lengthTool      = 0.1;
+LCL.lengthTool      = 0.13;
 
 % Defining Denavit Hartenberg Parameters for 5 Axis LCL_Camera_Robot
 
@@ -18,7 +18,7 @@ LCL.dhParams = [0                   0       LCL.heightBase      0;
                 LCL.lengthUpperarm  pi      -LCL.widthUpperarm  0;
                 LCL.lengthUnderarm  0       LCL.widthUnderarm   0;
                 LCL.lengthAxis5     -pi/2   -LCL.widthAxis5     0;
-                0                   0       LCL.lengthTool      0];
+                LCL.lengthTool      0       0                   0];
                 % 0                   pi/2    LCL.lengthAxis6     pi;
                 % 0                   0       LCL.lengthTool      0];
 
