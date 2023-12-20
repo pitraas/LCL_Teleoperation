@@ -17,3 +17,11 @@ while true
     RobMaster.writeline('read');
     waitfor(r);
 end
+
+function configEncoder = getcurrentPose(robot)
+    pattern  = digitsPattern;
+    robot.writeline('read');
+    PoseString = robot.readline();
+    Pose = extract(PoseString, pattern);
+    configEncoder = [Pose(1); Pose(2); Pose(5); Pose(7); Pose (9)];
+end
